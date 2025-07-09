@@ -3,6 +3,8 @@
 import subprocess as sp
 import logging
 import re
+from sedes.ap_list import AP_List
+import time
 
 SHELL_POPEN = lambda x: sp.Popen(x, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
 SHELL_RUN = lambda x: sp.run(x, stdout=sp.PIPE, stderr=sp.PIPE, check=True, shell=True)
@@ -28,6 +30,13 @@ def RUN_WITH_RES(cmd: str, format = None) -> str:
             elif len(ret) == 1:  # Single match → return as string
                 ret = str(ret[0])
         return ret
+
+
+def channel_to_freq(ch_id):
+    if not (0 <= ch_id <= 14 or ch_id >= 36):
+        raise ValueError('Invalid channel') 
+    
+    return 2412 + (ch_id - 1) * 5 if ch_id < 36 else 5180 + (ch_id - 1) * 20
 
 class WirelessInterface:
     def __init__(self, name):
@@ -60,10 +69,20 @@ class WirelessInterface:
         ret = RUN_WITH_RES(f'cat /sys/class/net/{self.name}/phy80211/index')
         return eval(ret)
         
-    def scan_ap(self):
-        # RUN_WITH_RES(f'sudo iw dev {self.name} scan')
-        return RUN_WITH_RES(f"sudo iwlist {self.name} scanning | egrep 'Cell |Encryption|Quality|Last beacon|ESSID'")
-
+    def scan_ap(self, channel = None, freq = None, duration = None):
+        cmd = f'sudo iw dev {self.name} scan'
+        if channel != None or freq != None:
+            freq = freq if freq is not None else channel_to_freq(channel)
+            cmd = cmd + f' freq {freq}'
+        if duration != None:
+            cmd = cmd + f' duration {duration}'
+        print(cmd)
+        self.ap_list = AP_List.from_terminal(
+            RUN_WITH_RES(cmd ) 
+        )
+        pass
     
+    def connect(self, ap_mac_addr):
+        assert self.ap_list.if_ap_exist(ap_mac_addr)
         
-    
+        
