@@ -53,12 +53,11 @@ def test_wpa_supplicant():
     wdev = _test_scan_config()
     policy = PowerGreedyPolicy()
     
-    while True:
-        wdev.scan_ap()
-        ap = policy.AP_selection(wdev.ap_list)
-        print(ap)
-        wdev.connect(ap['ssid'])
-        time.sleep(3)
+    wdev.scan_ap()
+    ap = policy.AP_selection(wdev.ap_list)
+    print(ap)
+    wdev.connect(ap['ssid'])
+    time.sleep(3)
 
 def test_dual_connect():
     wdevs = _test_dual_config()
@@ -76,9 +75,22 @@ def test_dual_connect():
             wdev.connect(ap['ssid'])
     
     
-    
-def test_ap_connect():
+def test_renewed_connect():
     wdev = _test_scan_config()
+    policy = PowerGreedyPolicy()
+    
+    # while True:
+    wdev.scan_ap(freq=5220)
+    ap = policy.AP_selection(wdev.ap_list)
+    print(ap)
+    wdev.connect(ap['ssid'])
+    wdev.scan_ap(freq=5220)
+    ap = policy.AP_selection(wdev.ap_list)
+    print(ap)
+    wdev.connect(ap['ssid'])
+    
+    
+    # print(wdev.ap_list)
 
 # test_scan()
 # test_scan(freq = 2462)
@@ -86,4 +98,5 @@ def test_ap_connect():
 # test_ap_react()
 
 # test_wpa_supplicant()
-test_dual_connect()
+# test_dual_connect()
+test_renewed_connect()

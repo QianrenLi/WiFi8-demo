@@ -3,6 +3,7 @@
 import subprocess as sp
 import logging
 import re
+import time
 from sedes.ap_list import AP_List
 from core.wpa_supplicant_cli import WPA_SUPPLICANT_CLI
 
@@ -44,6 +45,7 @@ class WirelessInterface:
         self.ind = self._determine_phy_id()
         self._bring_up()
         self.wcli = WPA_SUPPLICANT_CLI(name, ip)
+        self.connect_time = 0
         pass
     
     def _bring_up(self):
@@ -78,6 +80,11 @@ class WirelessInterface:
         if duration != None:
             cmd = cmd + f' duration {duration}'
         print(cmd)
+        
+        ## It seems the connect will block the scan if the scan starts less than 8s. Thus we wait 
+        while time.time() < self.connect_time + 8:
+            time.sleep(1)
+        
         self.ap_list = AP_List.from_terminal(
             RUN_WITH_RES(cmd ) 
         )
@@ -92,6 +99,7 @@ class WirelessInterface:
 
         self.wcli.connect(network_id)
         print(f'connect to {ssid} with network_id {network_id}')
+        self.connect_time = time.time()
         
         
         

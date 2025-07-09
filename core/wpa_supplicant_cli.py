@@ -63,8 +63,8 @@ class WPA_SUPPLICANT_CLI():
     def connect(self, network_id):
         if not self.is_started:
             self._start_wpa_supplicant()
-        else:
-            self._reload_wpa_supplicant()
+        # else:
+        #     self._reload_wpa_supplicant()
             
         cmd  = f"sudo wpa_cli -i {self.name} -p {self.ctrl_interface} enable_network {network_id}"
         cmd += f"; sudo wpa_cli -i {self.name} -p {self.ctrl_interface} select_network {network_id}"
