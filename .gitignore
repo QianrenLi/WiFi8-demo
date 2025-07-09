@@ -1,4 +1,8 @@
-log/
 */__pycache__/**
+*/__pycache__
+log/
 
 *.txt
+config/wpa_supplicant/*.conf
+
+

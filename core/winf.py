@@ -4,7 +4,7 @@ import subprocess as sp
 import logging
 import re
 from sedes.ap_list import AP_List
-import time
+from core.wpa_supplicant_cli import WPA_SUPPLICANT_CLI
 
 SHELL_POPEN = lambda x: sp.Popen(x, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
 SHELL_RUN = lambda x: sp.run(x, stdout=sp.PIPE, stderr=sp.PIPE, check=True, shell=True)
@@ -39,10 +39,11 @@ def channel_to_freq(ch_id):
     return 2412 + (ch_id - 1) * 5 if ch_id < 36 else 5180 + (ch_id - 1) * 20
 
 class WirelessInterface:
-    def __init__(self, name):
+    def __init__(self, name, ip):
         self.name = name
         self.ind = self._determine_phy_id()
         self._bring_up()
+        self.wcli = WPA_SUPPLICANT_CLI(name, ip)
         pass
     
     def _bring_up(self):
@@ -73,7 +74,7 @@ class WirelessInterface:
         cmd = f'sudo iw dev {self.name} scan'
         if channel != None or freq != None:
             freq = freq if freq is not None else channel_to_freq(channel)
-            cmd = cmd + f' freq {freq}'
+            cmd = cmd + f' freq {freq} flush'
         if duration != None:
             cmd = cmd + f' duration {duration}'
         print(cmd)
@@ -82,7 +83,15 @@ class WirelessInterface:
         )
         pass
     
-    def connect(self, ap_mac_addr):
-        assert self.ap_list.if_ap_exist(ap_mac_addr)
+    def connect(self, ssid):
+        assert self.ap_list.if_ap_exist(ssid), f'{ssid} do not exist in {self.ap_list}'
+        
+        self.wcli.add_ssid(ssid)
+
+        network_id = self.wcli.ssid.index(ssid) # wcli.ssid is a set
+
+        self.wcli.connect(network_id)
+        print(f'connect to {ssid} with network_id {network_id}')
+        
         
         

@@ -45,10 +45,8 @@ class AP_List():
 
         return df
     
-    def if_ap_exist(self, mac_address):
-        if mac_address in self.aps['mac address']:
-            return True
-        return False
+    def if_ap_exist(self, ssid):
+        return ssid in self.aps['ssid'].values
     
     
     @staticmethod
@@ -59,7 +57,7 @@ class AP_List():
     def update(self, terminal_res: str):
         new_df = AP_List._parse_terminal(terminal_res)
         
-        ##TODO: mark the disappear and appear AP apart
+        ##TODO: mark the disappear and appear AP apart  sudo iw dev wlx081f7165e561 station get
         self.aps = new_df
         return self
         
