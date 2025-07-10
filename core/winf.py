@@ -101,5 +101,3 @@ class WirelessInterface:
         print(f'connect to {ssid} with network_id {network_id}')
         self.connect_time = time.time()
         
-        
-        

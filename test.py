@@ -79,15 +79,21 @@ def test_renewed_connect():
     wdev = _test_scan_config()
     policy = PowerGreedyPolicy()
     
+    start_time = time.time()
     # while True:
-    wdev.scan_ap(freq=5220)
-    ap = policy.AP_selection(wdev.ap_list)
-    print(ap)
-    wdev.connect(ap['ssid'])
-    wdev.scan_ap(freq=5220)
-    ap = policy.AP_selection(wdev.ap_list)
-    print(ap)
-    wdev.connect(ap['ssid'])
+    wdev.scan_ap(channel=1)
+    # ssid = 'TP-LINK_8805'
+    # wdev.connect(ssid)
+    wdev.connect('LAB1112')
+    from core.ip_operation import dhcp_static_ip
+    # ap = policy.AP_selection(wdev.ap_list)
+    # print(ap)
+    dhcp_static_ip('192.168.1.154', '192.168.1.1', wdev.name)
+    end_time = time.time()
+    print(end_time - start_time)
+    
+    # wdev.scan_ap()
+    # wdev.connect('LAB1112')
     
     
     # print(wdev.ap_list)
