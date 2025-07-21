@@ -98,6 +98,36 @@ def test_renewed_connect():
     
     # print(wdev.ap_list)
 
+def test_dual_connect_with_ip():
+    wdevs = _test_dual_config()
+    policy = PowerGreedyPolicy()
+    from core.ip_operation import dhcp_static_ip
+    # ap = policy.AP_selection(wdev.ap_list)
+    # print(ap)
+    
+    for idx, wdev in enumerate(wdevs):
+        if idx == 0:
+            wdev.scan_ap()
+            wdev.connect('HUAWEI-Dual-AP')
+            dhcp_static_ip('192.168.3.25', '192.168.3.1', wdev.name)
+        else:
+            wdev.scan_ap()
+            wdev.connect('HUAWEI-Dual-AP_5G')
+            dhcp_static_ip('192.168.3.35', '192.168.3.1', wdev.name)
+    
+    # start_time = time.time()
+    # # while True:
+    # wdev.scan_ap(channel=1)
+    # # ssid = 'TP-LINK_8805'
+    # # wdev.connect(ssid)
+    # wdev.connect('LAB1112')
+    # from core.ip_operation import dhcp_static_ip
+    # # ap = policy.AP_selection(wdev.ap_list)
+    # # print(ap)
+    # dhcp_static_ip('192.168.1.154', '192.168.1.1', wdev.name)
+    # end_time = time.time()
+    # print(end_time - start_time)
+
 # test_scan()
 # test_scan(freq = 2462)
 # test_sense_freq()
@@ -105,4 +135,6 @@ def test_renewed_connect():
 
 # test_wpa_supplicant()
 # test_dual_connect()
-test_renewed_connect()
+# test_renewed_connect()
+
+test_dual_connect_with_ip()
