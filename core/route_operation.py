@@ -36,6 +36,9 @@ def seperate_nic(winf_names, netmask=24):
     for nic, info in nic_info.items():
         # Set the interface metric
         SHELL_RUN(
+            f'sudo ip route delete default via {info["gateway"]} dev {nic} src {info["ip"]}'
+        )
+        SHELL_RUN(
             f'sudo ip route add {info["subnet"]} dev {nic} table {info["priority"]}'
         )
         SHELL_RUN(
@@ -64,7 +67,7 @@ def clean_up(winf_names):
                     'ip': snicaddr.address,
                     'priority': initial_priority
                 }
-            initial_priority += 1
+        initial_priority += 1
             
     for nic in winf_names:
         nic = nic.strip()
