@@ -115,6 +115,10 @@ def test_dual_connect_with_ip():
             wdev.connect('HUAWEI-Dual-AP_5G')
             dhcp_static_ip('192.168.3.35', '192.168.3.1', wdev.name)
     
+    
+    # from core.route_operation import seperate_nic
+    # seperate_nic([wdevs[0].name, wdevs[1].name])
+    
     # start_time = time.time()
     # # while True:
     # wdev.scan_ap(channel=1)
